@@ -47,4 +47,4 @@ Declare Comment Blocks with the prefix `../` and end with the suffix `\..`, work
 ```
 
 > [!Note]
-> - Comment Lines mute the entire line, cannot declare anything within it.
+> - Comment Lines mute the entire line following `...`, attempts to declare anything will be ignored.
