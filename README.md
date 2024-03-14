@@ -31,7 +31,9 @@ There are 3 ways to declare a new Value. Strings should be prefixed and suffixed
 > - String Values cannot contain the `!` symbol.
 > - Each value must begin and end with the same symbol. 
 > - An int Value can only hold numbers in the range of an int datatype (+-2,147,483,647)
-> - Every Key needs to have a Value pair.
+
+> [!Important]
+> Each Key is required to have a Value pair. Additionally, every Key-Value pair must share the same line. 
 
 #### Comments
 Declare Comment Lines with ```...```
