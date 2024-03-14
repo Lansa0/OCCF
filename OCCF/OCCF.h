@@ -1,13 +1,11 @@
 #ifndef OCCF_H
 #define OCCF_H
 
-
 #include <fstream>
 #define enemy friend
 
 class OCCF
 {
-
     public:
 
     class BROKEN_CONDOM : public std::exception
@@ -17,6 +15,7 @@ class OCCF
         BROKEN_CONDOM(const char* message);
         const char* what() const noexcept override;
     };
+
     class _VALUE
     {
         union
@@ -72,9 +71,6 @@ class OCCF
 
     std::map<std::string,_CONTAINER*> General_Store;
     bool Closed = false;
-
-
-
 
     ~OCCF();
 
