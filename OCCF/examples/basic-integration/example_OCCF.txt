@@ -1,0 +1,9 @@
+... Comment Line
+../ Comment Block \..
+
+-SECTION1>
+    ?STRING? !Value! ... String (defaults to std::string)
+    ?INT? #2#      ... Int 
+    ?DOUBLE? #3.0#    ... Double
+    ?BOOL? true     ... Bool
+<-
