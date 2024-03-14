@@ -1,5 +1,5 @@
-# OCCF    Overly Complicated Configuration File
-Simple c++ configuration file format that supports a ***strictly*** 2 level nesting format. An outter "Section" containing key-value pairs.
+# OCCF - Overly Complicated Configuration File
+Simple c++ configuration file format that supports a ***strictly*** 2 level nesting format. An outter "Section" which contains key-value pairs, where each value can contain 1 of 4 datatypes (int, double, string, bool).
 
 ## Format
 ```
@@ -10,3 +10,4 @@ Simple c++ configuration file format that supports a ***strictly*** 2 level nest
     ?KEY BOOL? true
 <-
 ```
+To initialize a new Section, create an arrow pointing right using the hypen ```-``` and greater-than ```>``` symbols with the name of your section in between. 
