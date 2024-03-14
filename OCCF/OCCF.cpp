@@ -428,7 +428,7 @@ OCCF::_VALUE& OCCF::_CONTAINER::operator[](const std::string ___)
 std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::begin()const{return _.begin();}
 std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::end()const{return _.end();}
 
-std::ostream& operator<<(std::ostream& ____,OCCF::_CONTAINER& _____)
+std::ostream& operator<<(std::ostream& ____,const OCCF::_CONTAINER& _____)
 {
     for(const auto& ______ : _____._)
     {
