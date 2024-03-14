@@ -1,0 +1,21 @@
+... Comment Line
+
+../ Comment 
+     Block  \..
+
+-SECTION1>
+    ?STRING? !Value! ... String (defaults to std::string)
+    ?INT? #2#        ... Int
+    ?DOUBLE? #3.0#   ... Double
+    ?BOOL? true      ... Bool
+<-
+
+../
+Will not get Parsed while in a Comment Block
+-Section2>
+    ?STRING? !Value!
+    ?INT? #2#
+    ?DOUBLE? #3.0#
+    ?BOOL? true
+<-
+\..
