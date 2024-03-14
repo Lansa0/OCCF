@@ -22,7 +22,5 @@ int main()
     double DOUBLE = Data["Section"]["DOUBLE"];      // = 3.0
 
     bool BOOL = Data["Section"]["BOOL"];            // = true
-    
-    
 
 }
