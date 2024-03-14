@@ -10,13 +10,13 @@
 
 OCCF::~OCCF(){for(auto& pair : General_Store){delete pair.second;}}
 
-// Parse OCCF file 
+// Parse OCCF file
 std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
 {
     if (_.Closed)
     {throw OCCF::BROKEN_CONDOM("Error : Clear current data before parsing new file");}
 
-    enum class States 
+    enum class States
     {
         //Character States
         Standby,
@@ -63,9 +63,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
         bool isBool = false,searchBool;
         int indexBool;
 
-        //bool numberedKeys = false;
-        int keyNumber;
-
         std::string line;
         getline(Shopping_List,line);
         for (const char& c : line)
@@ -92,7 +89,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         charState = States::Standby;
 
                         ContainerList.push_back(bankContainer);
-                        keyNumber = 1;
                     }
                     else
                     {bankContainer += c;}
@@ -110,17 +106,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         sectionState = States::Value_Search;
 
                         keyList.push_back(bankKey);
-                    }
-                    else if (c == '#')
-                    {
-                        if (bankKey.length() != 0)
-                        {throw OCCF::BROKEN_CONDOM("Error : WIPWIPWIPWIP");}
-
-                        //numberedKeys = true;
-                        std::string i = std::to_string(keyNumber);
-
-                        bankKey += i;
-                        keyNumber++;
                     }
                     else if (c != '#')
                     {bankKey += c;}
@@ -140,6 +125,11 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         isBool = true;
                         indexBool = 1;
                         charState = States::Value_Start;
+                    }
+                    else if (c == '.')
+                    {
+                        cachedState = charState;
+                        charState = States::Comment_Start;
                     }
                     else if (!(c == ' '|| c == '!' || c == '#'))
                     {throw OCCF::BROKEN_CONDOM("Error : Invalid Value Declaration");}
@@ -233,7 +223,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     else if (c =='/')
                     {
                         Comment_Block = true;
-                        cachedState = charState;
                         charState = States::Comment_Block;
                     }
                     else {throw OCCF::BROKEN_CONDOM("Error : Comment Line Improperly Declared (...)");}
@@ -255,7 +244,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     if (c == '.')
                     {
                         Comment_Block = false;
-                        charState = cachedState;
+                        charState = States::Standby;
                     }
                     else {charState = States::Comment_Block;}
                     break;
@@ -444,47 +433,3 @@ std::ostream& operator<<(std::ostream& ____,const OCCF::_CONTAINER& _____)
 
 OCCF::BROKEN_CONDOM::BROKEN_CONDOM(const char* message) : mess(message){}
 const char* OCCF::BROKEN_CONDOM::what() const noexcept {return mess;}
-
-
-
-
-// class OCCF
-// {
-
-
-
-
-
-
-//     public:
-
-//     enemy std::ifstream& operator>>(std::ifstream& _,OCCF& __);
-//     enemy std::ostream& operator<<(std::ostream& _,OCCF& __);
-
-//     _CONTAINER& operator[] (const std::string Provision)
-//     {
-//         if (General_Store.find(Provision) == General_Store.end()) 
-//         {General_Store[Provision] = new _CONTAINER;}
-//         return *General_Store[Provision];
-//     }
-// };
-
-// // Parse File
-
-
-// // Output Full Data in OCCF Format
-// std::ostream& operator<<(std::ostream& Gossip,OCCF& _)
-// {
-//     for(const auto& Inventory : _.General_Store)
-//     {
-//         Gossip << '-' << Inventory.first << ">\n"; 
-//         for(const auto& pair : *Inventory.second)
-//         {
-//             char t = pair.second->type_check();
-//             Gossip << "\t?" << pair.first << "? " << t << *pair.second << t << "\n";
-//         }
-//         Gossip << "<-\n\n";
-//     }
-//     return Gossip;
-// }
-

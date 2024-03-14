@@ -46,9 +46,3 @@ Declare Comment Blocks with the prefix `../` and end with the suffix `\..`, work
 
 > [!Note]
 > - Comment Lines mute the entire line, cannot declare anything within it.
-> - Comment Blocks cannot interupt the flow of a key-value pair i.e. ```?Key? ../ Comment \.. !Value!```
-
-
-
-
-
