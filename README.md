@@ -1,1 +1,2 @@
 # OCCF - Overly Complicated Configuration File
+Simple c++ configuration file format that supports (strictly) 2 level nesting. An outter "Section" that contains key-value pairs. Each pair contains a String Key and either an int, double, string, or bool Value.
