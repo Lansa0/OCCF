@@ -26,8 +26,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
         Standby_Value, 
         Value_Start,
 
-        Force_End,
-
         Comment_Start,
         Comment_Middle,
         Comment_Line,
@@ -36,16 +34,11 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
         Comment_Block_Middle,
         Comment_Block_End,
 
-
         //Section States
         Container_Search,
         Key_Search,
         Value_Search,
 
-        //Value States
-        INT,
-        FLOAT,
-        STRING
     };
 
     States sectionState = States::Container_Search,cachedState;
