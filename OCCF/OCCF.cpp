@@ -8,13 +8,23 @@
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡) OCCF (｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
+std::string trim(const std::string& line)
+{
+    const char* WhiteSpace = " \t\v\r\n";
+    std::size_t start = line.find_first_not_of(WhiteSpace);
+    std::size_t end = line.find_last_not_of(WhiteSpace);
+    return start == end ? std::string() : line.substr(start, end - start + 1);
+}
+
+#define PARSING_ERROR(line_num,line) ("\nERROR : Parsing Failure\nLINE : " + std::to_string(line_num) + " , '" + trim(line) + "'\nWHAT : ")
+
 OCCF::~OCCF(){for(auto& pair : General_Store){delete pair.second;}}
 
 // Parse OCCF file
 std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
 {
     if (_.Closed)
-    {throw OCCF::BROKEN_CONDOM("Error : Clear current data before parsing new file");}
+    {throw OCCF::BROKEN_CONDOM("ERROR : Data Override\nWHAT : Clear current data before parsing new file");}
 
     enum class States
     {
@@ -38,13 +48,13 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
         Container_Search,
         Key_Search,
         Value_Search,
-
     };
 
     States sectionState = States::Container_Search,cachedState;
     std::vector<std::string> ContainerList,keyList;
 
     bool Comment_Block = false;
+    int line_num = 0;
 
     std::string bankContainer,bankKey,bankValue;
     while (Shopping_List)
@@ -56,6 +66,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
         bool isBool = false,searchBool;
         int indexBool;
 
+        line_num++;
         std::string line;
         getline(Shopping_List,line);
         for (const char& c : line)
@@ -67,16 +78,16 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                 else if (c == '-' && sectionState == States::Container_Search){charState = States::Container_Start;}
                 else if (c == '?' && sectionState == States::Key_Search){charState = States::Key_Start;}
                 else if (c == '<' && sectionState == States::Key_Search){charState = States::Container_End;}
-                else if (c != ' '){throw OCCF::BROKEN_CONDOM("Error : Parsing Failure");}
+                else if (c != ' '){throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "General syntax error"));}
                     break;
 
                 case States::Container_Start:
                     if (c == '>')
                     {
                         if (bankContainer.length() == 0)
-                        {throw OCCF::BROKEN_CONDOM("Error : Cannot have empty Container Names");}
+                        {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have empty container Names"));}
                         else if (std::find(ContainerList.begin(),ContainerList.end(),bankContainer) != ContainerList.end())
-                        {throw OCCF::BROKEN_CONDOM("Error : Cannot have matching Container Names");}
+                        {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have duplicate container Names"));}
 
                         sectionState = States::Key_Search;
                         charState = States::Standby;
@@ -91,9 +102,9 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     if (c == '?')
                     {
                         if (bankKey.length() == 0)
-                        {throw OCCF::BROKEN_CONDOM("Error : Cannot have Dmpty Key Names");}
+                        {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have empty key names"));}
                         else if (std::find(keyList.begin(),keyList.end(),bankKey) != keyList.end())
-                        {throw OCCF::BROKEN_CONDOM("Error : Cannot have Duplicate Key Names");}
+                        {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have duplicate key names"));}
 
                         charState = States::Standby_Value;
                         sectionState = States::Value_Search;
@@ -103,7 +114,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     else if (c != '#')
                     {bankKey += c;}
                     else 
-                    {throw OCCF::BROKEN_CONDOM("Error : WIPWIPWIPWIPWIP");}
+                    {throw OCCF::BROKEN_CONDOM("Error : Don't Do That");}
                     break;
 
                 case States::Standby_Value:
@@ -125,7 +136,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         charState = States::Comment_Start;
                     }
                     else if (!(c == ' '|| c == '!' || c == '#'))
-                    {throw OCCF::BROKEN_CONDOM("Error : Invalid Value Declaration");}
+                    {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Invalid value declaration"));}
                     break;
 
                 case States::Value_Start:
@@ -143,14 +154,14 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         isInt = true;
                     }
                     else if ((c == '!' && !isString) || (c == '#' && isString))
-                    {throw OCCF::BROKEN_CONDOM("Error : Value improperly declared");}
+                    {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Invalid value declaration"));}
                     else if (isBool)
                     {
                         std::string check = (searchBool) ? "true" : "false";
                         if (searchBool)
                         {
                             if (check[indexBool] == c){indexBool++;}
-                            else{throw OCCF::BROKEN_CONDOM("Error : bool 'true' failed to parse (Check Spelling)");}
+                            else{throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "bool 'true' failed to parse (Check Spelling)"));}
 
                             if (indexBool == 4)
                             {
@@ -164,7 +175,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         else if (!searchBool)
                         {
                             if (check[indexBool] == c){indexBool++;}
-                            else{throw OCCF::BROKEN_CONDOM("Error : bool 'false' failed to parse (Check Spelling)");}
+                            else{throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "bool 'false' failed to parse (Check Spelling)"));}
 
                             if (indexBool == 5)
                             {
@@ -180,8 +191,8 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     {
                         if (!isString)
                         {
-                            if (!(isdigit(c) || c =='.')){throw OCCF::BROKEN_CONDOM("Error : Number values cannot contain letters or symbols");}
-                            if (c == '.' && !isInt){throw OCCF::BROKEN_CONDOM("Error : Invalid double");}
+                            if (!(isdigit(c) || c =='.')){throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Number values cannot contain letters or symbols"));}
+                            if (c == '.' && !isInt){throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Invalid double"));}
                             else if (c == '.'){isInt = false;}
                         }
                         bankValue += c;
@@ -191,24 +202,22 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                 case States::Container_End:
                     if (c == '-')
                     {
-
                         keyList.clear();
 
                         sectionState = States::Container_Search;
                         charState = States::Standby;
 
                         bankContainer = "";
-
                     }
                     else if (c != '-')
-                    {throw OCCF::BROKEN_CONDOM("Error : Container was not closed correctly");}
+                    {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Container was not closed correctly"));}
                     else
-                    {throw OCCF::BROKEN_CONDOM("Error : idk bro");}
+                    {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "idk bro"));}
                     break;
 
                 case States::Comment_Start:
                     if (c == '.'){charState = States::Comment_Middle;}
-                    else {throw OCCF::BROKEN_CONDOM("Error : Comment Line Improperly Declared (...)");}
+                    else {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Comment Line Improperly Declared (...)"));}
                     break;
 
                 case States::Comment_Middle:
@@ -218,7 +227,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                         Comment_Block = true;
                         charState = States::Comment_Block;
                     }
-                    else {throw OCCF::BROKEN_CONDOM("Error : Comment Line Improperly Declared (...)");}
+                    else {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Comment Line Improperly Declared (...)"));}
                     break;
 
                 case States::Comment_Line:
@@ -249,7 +258,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
     }
 
     if (sectionState != States::Container_Search)
-    {throw OCCF::BROKEN_CONDOM("Error : Container not Closed properly");}
+    {throw OCCF::BROKEN_CONDOM(std::string("ERROR : Parsing Failure\nWHAT : Container not Closed properly"));}
 
     ContainerList.clear();
     _.Closed = true;
@@ -425,4 +434,5 @@ std::ostream& operator<<(std::ostream& ____,const OCCF::_CONTAINER& _____)
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
 OCCF::BROKEN_CONDOM::BROKEN_CONDOM(const char* message) : mess(message){}
+OCCF::BROKEN_CONDOM::BROKEN_CONDOM(std::string message) : mess(message.c_str()){}
 const char* OCCF::BROKEN_CONDOM::what() const noexcept {return mess;}

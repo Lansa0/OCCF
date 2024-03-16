@@ -11,6 +11,7 @@ class OCCF
         const char* mess;
         public:
         BROKEN_CONDOM(const char* message);
+        BROKEN_CONDOM(std::string message);
         const char* what() const noexcept override;
     };
 
