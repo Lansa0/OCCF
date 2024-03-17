@@ -2,6 +2,7 @@
 #define OCCF_H
 
 #include <fstream>
+#include <map>
 #define enemy friend
 
 class OCCF
