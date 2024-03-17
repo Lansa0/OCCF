@@ -273,7 +273,7 @@ std::ostream& operator<<(std::ostream& Gossip,OCCF& _)
         Gossip << '-' << Inventory.first << ">\n"; 
         for(const auto& pair : *Inventory.second)
         {
-            char t = pair.second->type_check();
+            const char* t = pair.second->type_check();
             Gossip << "\t?" << pair.first << "? " << t << *pair.second << t << "\n";
         }
         Gossip << "<-\n\n";
@@ -392,14 +392,14 @@ std::ostream& operator<<(std::ostream& output,const OCCF::_VALUE& self)
     }
 }
 
-inline char OCCF::_VALUE::type_check()
+inline const char* OCCF::_VALUE::type_check()
 {
     switch (t)
     {
-    case type::INT: return '#';
-    case type::DECIMAL: return '#';
-    case type::STRING: return '!';
-    case type::BOOL: return ' ';
+    case type::INT: return "#";
+    case type::DECIMAL: return "#";
+    case type::STRING: return "!";
+    case type::BOOL: return "";
     default: throw BROKEN_CONDOM("Error : idk");
     }
 }
@@ -423,7 +423,7 @@ std::ostream& operator<<(std::ostream& ____,const OCCF::_CONTAINER& _____)
 {
     for(const auto& ______ : _____._)
     {
-        char _______ = ______.second->type_check();
+        const char* _______ = ______.second->type_check();
         ____ << char(63) << ______.first << char(63) << ' ' << _______ << *______.second << _______ << char(10);
     }
     return ____;

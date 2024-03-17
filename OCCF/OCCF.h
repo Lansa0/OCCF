@@ -54,7 +54,7 @@ class OCCF
 
         enemy std::ostream& operator<<(std::ostream& output,const _VALUE& self);
 
-        inline char type_check();
+        inline const char* type_check();
     };
 
     class _CONTAINER
