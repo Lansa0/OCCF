@@ -1,5 +1,7 @@
 # OCCF - Overly Complicated Configuration File
-Simple c++ configuration file format that supports a ***strictly*** 2 level nesting format. An outter "Section" which contains key-value pairs, where each value can contain 1 of 4 datatypes (int, double, string, bool).
+Simple c++ configuration file format that supports a ***strictly*** 2 level nesting format. An outter "Section" which contains key-value pairs, where each value can contain 1 of 4 datatypes (int, double, string, bool). Compiles with c++11.
+
+***
 
 ## Format
 ```
@@ -48,3 +50,147 @@ Declare Comment Blocks with the prefix `../` and end with the suffix `\..`, work
 
 > [!Note]
 > - Comment Lines mute the entire line following `...`, attempts to declare anything will be ignored.
+
+***
+
+## Examples
+
+##### Source txt file
+```
+-Section>
+    ?KEY STRING? !Value!
+    ?KEY INT? #1#
+    ?KEY DOUBLE? #1.1#
+    ?KEY BOOL? true
+<-
+... Source.txt
+```
+
+### Reading from source file
+```c++
+#include <iostream>
+#include "OCCF.h"
+
+int main()
+{
+    OCCF Data;
+        
+    std::ifstream file("Source.txt");
+    if (!file.is_open())
+    {
+        std::cout << "File Failed to Open\n";
+        return 1;
+    }
+
+    // Parse contents of the Source.txt file
+    file >> Data;
+
+    // Store the parsed data into variables
+    int INT = Data["Section"]["INT"]; 
+    double DOUBLE = Data["Section"]["DOUBLE"];
+    std::string STRING = Data["Section"]["STRING"]; // const char* works too
+    bool BOOL = Data["Section"]["BOOL"];
+
+    // Output data
+    std::cout 
+    << INT << '\n'    // 100
+    << DOUBLE << '\n' // 1.1
+    << STRING << '\n' // VALUE
+    << BOOL << '\n';  // true : 1
+}
+```
+### Modifying data  
+```c++
+int main()
+{
+    OCCF Data;
+        
+    std::ifstream file("Source.txt");
+    if (!file.is_open())
+    {
+        std::cout << "File Failed to Open\n";
+        return 1;
+    }
+
+    file >> Data;
+    Data["Section"]["INT"] = 200;
+    Data["Section"]["DOUBLE"] = 1.2;
+    Data["Section"]["STRING"] = "NEW VALUE";
+    Data["Section"]["BOOL"] = false;
+
+    int INT =  Data["Section"]["INT"]; 
+    double DOUBLE =  Data["Section"]["DOUBLE"];
+    std::string STRING =  Data["Section"]["STRING"];
+    bool BOOL =  Data["Section"]["BOOL"];
+
+    std::cout 
+    << INT << '\n'    // 200
+    << DOUBLE << '\n' // 1.1
+    << STRING << '\n' // NEW VALUE
+    << BOOL << '\n';  // false : 0
+}
+```
+> [!Note]
+> Values are not locked to the type they originated with, `Section["INT"] = true` will reassign the key `INT` to value `true`.
+### Adding new data
+```c++
+int main()
+{
+    OCCF Data;
+        
+    std::ifstream file("Source.txt");
+    if (!file.is_open())
+    {
+        std::cout << "File Failed to Open\n";
+        return 1;
+    }
+
+    file >> Data;
+    Data["Section"]["NEW STRING"] = "NEW STRING";
+    std::string NEW_STRING = Data["Section"]["STRING"];
+    
+    std::cout << NEW_STRING; 
+}
+```
+### Writing to file
+```c++
+int main()
+{
+    OCCF Data;
+        
+    std::ifstream file("Source.txt");
+    if (!file.is_open())
+    {
+        std::cout << "File Failed to Open\n";
+        return 1;
+    }
+
+    file >> Data;
+
+    // Create new section
+    Data["Section2"]["KEY"] = "VALUE";
+
+    std::ofstream file2("Target.txt);
+    if (!file2.is_open())
+    {
+        std::cout << "File Failed to Open\n";
+        return 1;
+    }
+
+    // Dump data into target file
+    file2 << Data; 
+}
+```
+##### Target.txt
+```
+-Section>
+    ?KEY STRING? !Value!
+    ?KEY INT? #1#
+    ?KEY DOUBLE? #1.1#
+    ?KEY BOOL? true
+<-
+
+-Section2>
+    ?KEY? !VALUE!
+<-
+```
