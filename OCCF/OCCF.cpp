@@ -405,7 +405,7 @@ inline const char* OCCF::_VALUE::type_check()
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡) SECTION (｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
-OCCF::_CONTAINER::~_CONTAINER(){for(auto& pair:Container){delete pair.second;}}
+OCCF::_CONTAINER::~_CONTAINER(){for(auto& pair:Container){pair.second = nullptr;}}
 
 OCCF::_VALUE& OCCF::_CONTAINER::operator[](const std::string index)
 {
