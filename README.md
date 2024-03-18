@@ -1,7 +1,5 @@
 # OCCF - Overly Complicated Configuration File
 Simple c++ configuration file format that supports a ***strictly*** 2 level nesting format. An outter "Section" which contains key-value pairs, where each value can contain 1 of 4 datatypes (int, double, string, bool). Compiles with c++11.
-> [!Caution]
-> Current release contains minor memory leaks... nothing major tho ;)
 ***
 
 ## Format
@@ -55,8 +53,7 @@ Declare Comment Blocks with the prefix `../` and end with the suffix `\..`, work
 ***
 
 ## Examples
-
-##### Source txt file
+`Source.txt`
 ```
 -Section>
     ?KEY STRING? !Value!
@@ -64,7 +61,6 @@ Declare Comment Blocks with the prefix `../` and end with the suffix `\..`, work
     ?KEY DOUBLE? #1.1#
     ?KEY BOOL? true
 <-
-... Source.txt
 ```
 
 ### Reading from source file
@@ -182,7 +178,7 @@ int main()
     file2 << Data; 
 }
 ```
-##### Target.txt
+`Target.txt`
 ```
 -Section>
     ?KEY STRING? !Value!
