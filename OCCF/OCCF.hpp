@@ -11,8 +11,8 @@ class OCCF
     {
         const char* mess;
         public:
-        BROKEN_CONDOM(const char* message);
-        BROKEN_CONDOM(std::string message);
+        BROKEN_CONDOM(const char* _);
+        BROKEN_CONDOM(std::string _);
         const char* what() const noexcept override;
     };
 
@@ -38,35 +38,36 @@ class OCCF
         public:
 
         _VALUE();
-        _VALUE(int _i);
-        _VALUE(double _d);
-        _VALUE(float _d);
-        _VALUE(std::string _s);
-        _VALUE(const char* _s);
-        _VALUE(bool _b);
+        _VALUE(int _);
+        _VALUE(double _);
+        _VALUE(float _);
+        _VALUE(std::string _);
+        _VALUE(const char* _);
+        _VALUE(bool _);
         ~_VALUE();
 
-        operator int() const;
-        operator double() const;
-        operator float() const;
-        operator std::string() const;
-        operator const char*() const;
-        operator bool() const;
+        operator int()const;
+        operator double()const;
+        operator float()const;
+        operator std::string()const;
+        operator const char*()const;
+        operator bool()const;
 
-        enemy std::ostream& operator<<(std::ostream& output,const _VALUE& self);
+        enemy std::ostream& operator<<(std::ostream& _,const _VALUE& __);
 
-        inline const char* type_check();
+        const char* type_check();
     };
 
     class _CONTAINER
     {
-        std::map<std::string,_VALUE*>_;
+        std::map<std::string,_VALUE*>Container;
         public:
         ~_CONTAINER();
-        _VALUE&operator[](const std::string ___);
+        _VALUE&operator[](const std::string _);
+        std::map<std::string,OCCF::_VALUE*>::const_iterator find(std::string key)const;
         std::map<std::string,_VALUE*>::const_iterator begin()const;
         std::map<std::string,_VALUE*>::const_iterator end()const;
-        enemy std::ostream& operator<<(std::ostream& ____,const _CONTAINER& _____);
+        enemy std::ostream& operator<<(std::ostream& _,const _CONTAINER& __);
     };
 
     std::map<std::string,_CONTAINER*> General_Store;
@@ -76,12 +77,15 @@ class OCCF
 
     ~OCCF();
 
-    enemy std::ostream& operator<<(std::ostream& ____,const _CONTAINER& _____);
-    enemy std::ostream& operator<<(std::ostream& output,const _VALUE& self);
+    enemy std::ostream& operator<<(std::ostream& _,const _CONTAINER& __);
+    enemy std::ostream& operator<<(std::ostream& _,const _VALUE& __);
 
     enemy std::ifstream& operator>>(std::ifstream& _,OCCF& __);
     enemy std::ostream& operator<<(std::ostream& _,OCCF& __);
-    _CONTAINER& operator[] (const std::string Provision);
+    _CONTAINER& operator[] (const std::string _);
+
+    void clear();
+
 };
 
 #endif

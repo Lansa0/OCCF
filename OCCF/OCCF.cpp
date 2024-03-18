@@ -8,6 +8,8 @@
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡) OCCF (｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
+OCCF::~OCCF(){for(auto& pair : General_Store){delete pair.second;}}
+
 std::string trim(const std::string& line)
 {
     const char* WhiteSpace = " \t\v\r\n";
@@ -15,10 +17,7 @@ std::string trim(const std::string& line)
     std::size_t end = line.find_last_not_of(WhiteSpace);
     return start == end ? std::string() : line.substr(start, end - start + 1);
 }
-
 #define PARSING_ERROR(line_num,line) ("\nERROR : Parsing Failure\nLINE : " + std::to_string(line_num) + " , '" + trim(line) + "'\nWHAT : ")
-
-OCCF::~OCCF(){for(auto& pair : General_Store){delete pair.second;}}
 
 // Parse OCCF file
 std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
@@ -51,7 +50,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
     };
 
     States sectionState = States::Container_Search,cachedState;
-    std::vector<std::string> ContainerList,keyList;
 
     bool Comment_Block = false;
     int line_num = 0;
@@ -86,13 +84,11 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     {
                         if (bankContainer.length() == 0)
                         {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have empty container Names"));}
-                        else if (std::find(ContainerList.begin(),ContainerList.end(),bankContainer) != ContainerList.end())
+                        else if (_.General_Store.find(bankContainer) != _.General_Store.end())
                         {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have duplicate container Names"));}
 
                         sectionState = States::Key_Search;
                         charState = States::Standby;
-
-                        ContainerList.push_back(bankContainer);
                     }
                     else
                     {bankContainer += c;}
@@ -103,13 +99,11 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                     {
                         if (bankKey.length() == 0)
                         {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have empty key names"));}
-                        else if (std::find(keyList.begin(),keyList.end(),bankKey) != keyList.end())
+                        else if (_[bankContainer].find(bankKey) != _[bankContainer].end())
                         {throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "Cannot have duplicate key names"));}
 
                         charState = States::Standby_Value;
                         sectionState = States::Value_Search;
-
-                        keyList.push_back(bankKey);
                     }
                     else if (c != '#')
                     {bankKey += c;}
@@ -202,8 +196,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                 case States::Container_End:
                     if (c == '-')
                     {
-                        keyList.clear();
-
                         sectionState = States::Container_Search;
                         charState = States::Standby;
 
@@ -260,7 +252,6 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
     if (sectionState != States::Container_Search)
     {throw OCCF::BROKEN_CONDOM(std::string("ERROR : Parsing Failure\nWHAT : Container not Closed properly"));}
 
-    ContainerList.clear();
     _.Closed = true;
     return Shopping_List;
 };
@@ -286,6 +277,12 @@ OCCF::_CONTAINER& OCCF::operator[] (const std::string Provision)
     if (General_Store.find(Provision) == General_Store.end()) 
     {General_Store[Provision] = new OCCF::_CONTAINER;}
     return *General_Store[Provision];
+}
+
+void OCCF::clear()
+{
+    General_Store.clear();
+    Closed = false;
 }
 
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
@@ -400,7 +397,7 @@ inline const char* OCCF::_VALUE::type_check()
     case type::DECIMAL: return "#";
     case type::STRING: return "!";
     case type::BOOL: return "";
-    default: throw BROKEN_CONDOM("Error : idk");
+    default: throw BROKEN_CONDOM("\nERROR : idk\n");
     }
 }
 
@@ -408,25 +405,26 @@ inline const char* OCCF::_VALUE::type_check()
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡) SECTION (｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
-OCCF::_CONTAINER::~_CONTAINER(){for(auto&__:_){delete __.second;}}
+OCCF::_CONTAINER::~_CONTAINER(){for(auto& pair:Container){delete pair.second;}}
 
-OCCF::_VALUE& OCCF::_CONTAINER::operator[](const std::string ___)
+OCCF::_VALUE& OCCF::_CONTAINER::operator[](const std::string index)
 {
-    if (_.find(___) == _.end()){_[___] = new _VALUE;}
-    return *_[___];
+    if (Container.find(index) == Container.end()){Container[index] = new _VALUE;}
+    return *Container[index];
 }
 
-std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::begin()const{return _.begin();}
-std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::end()const{return _.end();}
+std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::find(std::string key)const{return Container.find(key);}
+std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::begin()const{return Container.begin();}
+std::map<std::string,OCCF::_VALUE*>::const_iterator OCCF::_CONTAINER::end()const{return Container.end();}
 
-std::ostream& operator<<(std::ostream& ____,const OCCF::_CONTAINER& _____)
+std::ostream& operator<<(std::ostream& output,const OCCF::_CONTAINER& self)
 {
-    for(const auto& ______ : _____._)
+    for(const auto& pair : self.Container)
     {
-        const char* _______ = ______.second->type_check();
-        ____ << char(63) << ______.first << char(63) << ' ' << _______ << *______.second << _______ << char(10);
+        const char* affix = pair.second->type_check();
+        output << char(63) << pair.first << char(63) << ' ' << affix << *pair.second << affix << char(10);
     }
-    return ____;
+    return output;
 }
 
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
