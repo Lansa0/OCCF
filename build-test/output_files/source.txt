@@ -1,0 +1,6 @@
+-Section>
+    ?STRING? !VALUE!
+    ?INT? #100#
+    ?DOUBLE? #1.1#
+    ?BOOL? true
+<-
