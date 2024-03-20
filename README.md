@@ -93,7 +93,7 @@ int main()
     << INT << '\n'    // 100
     << DOUBLE << '\n' // 1.1
     << STRING << '\n' // VALUE
-    << BOOL << '\n';  // true : 1
+    << BOOL << '\n';  // 1 (true)
 }
 ```
 ### Modifying data  
@@ -124,7 +124,7 @@ int main()
     << INT << '\n'    // 200
     << DOUBLE << '\n' // 1.1
     << STRING << '\n' // NEW VALUE
-    << BOOL << '\n';  // false : 0
+    << BOOL << '\n';  // 0 (false)
 }
 ```
 > [!Note]
