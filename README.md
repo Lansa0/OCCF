@@ -56,10 +56,10 @@ Declare Comment Blocks with the prefix `../` and end with the suffix `\..`, work
 `Source.txt`
 ```
 -Section>
-    ?KEY STRING? !Value!
-    ?KEY INT? #1#
-    ?KEY DOUBLE? #1.1#
-    ?KEY BOOL? true
+    ?STRING? !Value!
+    ?INT? #100#
+    ?DOUBLE? #1.1#
+    ?BOOL? true
 <-
 ```
 
@@ -181,10 +181,10 @@ int main()
 `Target.txt`
 ```
 -Section>
-    ?KEY STRING? !Value!
-    ?KEY INT? #1#
-    ?KEY DOUBLE? #1.1#
-    ?KEY BOOL? true
+    ?STRING? !Value!
+    ?INT? #100#
+    ?DOUBLE? #1.1#
+    ?BOOL? true
 <-
 
 -Section2>
