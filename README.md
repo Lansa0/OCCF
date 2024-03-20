@@ -167,7 +167,7 @@ int main()
     // Create new section
     Data["Section2"]["KEY"] = "VALUE";
 
-    std::ofstream file2("Target.txt);
+    std::ofstream file2("Target.txt");
     if (!file2.is_open())
     {
         std::cout << "File Failed to Open\n";
