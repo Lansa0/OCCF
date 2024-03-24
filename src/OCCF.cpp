@@ -12,7 +12,7 @@ std::string trim(const std::string& line)
     std::size_t end = line.find_last_not_of(WhiteSpace);
     return start == end ? std::string() : line.substr(start, end - start + 1);
 }
-#define PARSING_ERROR(line_num,line) ("\nERROR : Parsing Failure\nLINE : " + std::to_string(line_num) + " , '" + trim(line) + "'\nWHAT : ")
+#define PARSING_ERROR(line_num,line) ("\nERROR : Parsing Failure\nLINE : "+std::to_string(line_num)+" , '"+trim(line)+"'\nWHAT : ")
 
 // Parse OCCF file
 std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
@@ -64,6 +64,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
         getline(Shopping_List,line);
         for (const char& c : line)
         {
+
             switch (charState)
             {
                 case States::Standby:
@@ -71,7 +72,7 @@ std::ifstream& operator>> (std::ifstream& Shopping_List,OCCF& _)
                 else if (c == '-' && sectionState == States::Container_Search){charState = States::Container_Start;}
                 else if (c == '?' && sectionState == States::Key_Search){charState = States::Key_Start;}
                 else if (c == '<' && sectionState == States::Key_Search){charState = States::Container_End;}
-                else if (c != ' '){throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "General syntax error"));}
+                else if (c != ' ' && c != '\t'){throw OCCF::BROKEN_CONDOM(std::string(PARSING_ERROR(line_num,line) + "General syntax error"));}
                     break;
 
                 case States::Container_Start:
@@ -285,7 +286,7 @@ void OCCF::clear()
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
 OCCF::_VALUE::_VALUE(){}
-OCCF::_VALUE::~_VALUE(){if (t == type::STRING){s = nullptr;}}
+OCCF::_VALUE::~_VALUE(){}
 
 OCCF::_VALUE::_VALUE(int _i) : i(_i),t(type::INT){}
 OCCF::_VALUE::_VALUE(double _d) : d(_d),t(type::DECIMAL){}
@@ -400,7 +401,21 @@ inline const char* OCCF::_VALUE::type_check()
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡) SECTION (｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 //(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)(｡♥‿♥｡)
 
-OCCF::_CONTAINER::~_CONTAINER(){for(auto& pair:Container){pair.second = nullptr;}}
+OCCF::_CONTAINER::~_CONTAINER()
+{for(auto& pair:Container){
+    if (pair.second->t == OCCF::_VALUE::type::STRING)
+    {delete pair.second->s;pair.second->s = nullptr;}
+    delete pair.second;pair.second = nullptr;}
+}
+
+OCCF::_VALUE& OCCF::_CONTAINER::operator[](const int _index)
+{
+    std::string index = std::to_string(_index);
+
+    if (Container.find(index) == Container.end()){Container[index] = new _VALUE;}
+    return *Container[index];
+}
+
 
 OCCF::_VALUE& OCCF::_CONTAINER::operator[](const std::string index)
 {

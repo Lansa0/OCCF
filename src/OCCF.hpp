@@ -19,7 +19,7 @@ class OCCF
         const char* what() const noexcept override;
     };
 
-    class _VALUE
+    struct _VALUE
     {
         union
         {
@@ -37,8 +37,6 @@ class OCCF
             BOOL
         };
         type t;
-
-        public:
 
         _VALUE();
         _VALUE(int _);
@@ -61,12 +59,12 @@ class OCCF
         const char* type_check();
     };
 
-    class _CONTAINER
+    struct _CONTAINER
     {
         std::map<std::string,_VALUE*>Container;
-        public:
         ~_CONTAINER();
-        _VALUE&operator[](const std::string _);
+        _VALUE&operator[](const std::string index);
+        _VALUE&operator[](const int index);
         std::map<std::string,OCCF::_VALUE*>::const_iterator find(std::string key)const;
         std::map<std::string,_VALUE*>::const_iterator begin()const;
         std::map<std::string,_VALUE*>::const_iterator end()const;
@@ -90,5 +88,4 @@ class OCCF
     void clear();
 
 };
-
 #endif
